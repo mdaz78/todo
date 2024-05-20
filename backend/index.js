@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
-const { createTodo } = require("./types");
+const { createTodo, updateTodo } = require("./types");
 const { todo } = require("./db");
 
 const app = express();
@@ -51,7 +51,7 @@ app.put("/completed", async (req, res) => {
 
   await todo.updateOne(
     {
-      _id: updatePayload.data.id,
+      _id: updatePayload.id,
     },
     {
       completed: true,
