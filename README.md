@@ -1,4 +1,4 @@
-# A simple TODO Application
+# A very simple full stack TODO Application
 
 - Create a todo item
 - See their existing todo item
