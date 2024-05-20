@@ -1,11 +1,14 @@
+require("dotenv").config();
+
 const express = require("express");
 const { createTodo } = require("./types");
+const { todo } = require("./db");
 
 const app = express();
 
 app.use(express.json());
 
-app.post("/todo", (req, res) => {
+app.post("/todo", async (req, res) => {
   const createPayload = req.body;
   const parsedPayload = createTodo.safeParse(createPayload);
 
@@ -13,11 +16,25 @@ app.post("/todo", (req, res) => {
     res.status(411).json({ message: "invalid input" });
     return;
   }
+
+  await todo.create({
+    title: parsedPayload.data.title,
+    description: parsedPayload.data.description,
+    completed: false,
+  });
+
+  res.json({
+    message: "todo created",
+  });
 });
 
-app.get("/todos", (req, res) => {});
+app.get("/todos", async (req, res) => {
+  const todos = await todo.find();
 
-app.put("/completed", (req, res) => {
+  res.json(todos);
+});
+
+app.put("/completed", async (req, res) => {
   const updatePayload = req.body;
   const parsedPayload = updateTodo.safeParse(updatePayload);
 
@@ -25,4 +42,17 @@ app.put("/completed", (req, res) => {
     res.status(411).json({ message: "invalid input" });
     return;
   }
+
+  await todo.updateOne(
+    {
+      _id: updatePayload.data.id,
+    },
+    {
+      completed: true,
+    }
+  );
+});
+
+app.listen(3000, () => {
+  console.log("server started");
 });
